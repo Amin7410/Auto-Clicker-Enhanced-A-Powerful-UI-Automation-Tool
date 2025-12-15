@@ -194,19 +194,3 @@ def parse_json_strokes_data(json_string: str) -> Optional[List[List[Dict[str, in
             current_parsed_stroke.append({"x": x_val, "y": y_val})
         parsed_strokes.append(current_parsed_stroke)
     return parsed_strokes
-
-# Auto Clicker Enhanced
-# Copyright (C) <2025> <Đinh Khởi Minh>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
