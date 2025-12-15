@@ -23,22 +23,16 @@ csharp_service_process: subprocess.Popen | None = None
 CSHARP_EXE_NAME = "sever.exe" 
 
 if getattr(sys, 'frozen', False):
-    # Nếu đang chạy như một file EXE đã được đóng gói (ví dụ bởi PyInstaller)
-    application_root = os.path.dirname(sys.executable) # Đây sẽ là 'dist/main'
+    application_root = os.path.dirname(sys.executable) 
     
-    # Thêm thư mục '_internal' vào đường dẫn tìm kiếm của sever_bundle
-    # PyInstaller thường đặt các thư mục data vào 'lib' hoặc '_internal'
     csharp_bundle_dir_in_frozen = os.path.join(application_root, "_internal", "sever_bundle") 
     
-    # Kiểm tra xem đường dẫn này có tồn tại không. Nếu không, thử đường dẫn cũ (ngang hàng)
     if not os.path.exists(csharp_bundle_dir_in_frozen) or not os.path.isdir(csharp_bundle_dir_in_frozen):
-        # Fallback về đường dẫn cũ nếu _internal không tồn tại (có thể là onefile, hoặc cấu trúc khác)
         csharp_bundle_dir_in_frozen = os.path.join(application_root, "sever_bundle")
     
     csharp_exe_full_path = os.path.join(csharp_bundle_dir_in_frozen, CSHARP_EXE_NAME)
     logger.debug(f"Running as frozen app. C# EXE path: {csharp_exe_full_path}")
 else:
-    # Nếu đang chạy trong môi trường phát triển Python bình thường
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_script_dir, os.pardir))
     csharp_dev_build_dir = os.path.join(project_root, "sever", "bin", "Debug", "net9.0-windows","win-x64","publish")
@@ -189,7 +183,7 @@ def main():
         main_window_frame.grid(row=0, column=0, sticky="nsew")
 
         root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
-        root._main_app_on_closing_handler = lambda: on_closing(root) # Thiết lập handler cho việc đóng ứng dụng
+        root._main_app_on_closing_handler = lambda: on_closing(root) 
 
         logger.info("Starting Tkinter main loop...")
         try:
@@ -212,19 +206,3 @@ if __name__ == "__main__":
     if not hasattr(subprocess, 'CREATE_NO_WINDOW'):
          subprocess.CREATE_NO_WINDOW = 0x08000000 
     main()
-
-# Auto Clicker Enhanced
-# Copyright (C) <2025> <Đinh Khởi Minh>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
