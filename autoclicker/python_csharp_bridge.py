@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2025 Đinh Khởi Minh
+
 # python_csharp_bridge.py
 import json
 import time
