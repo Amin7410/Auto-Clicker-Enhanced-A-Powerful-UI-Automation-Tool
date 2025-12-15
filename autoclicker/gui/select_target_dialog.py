@@ -81,7 +81,6 @@ class SelectTargetDialog(tk.Toplevel):
         self.listbox.focus_set()
 
     def _on_ok(self):
-        """Xử lý khi nhấn OK."""
         selected_indices = self.listbox.curselection()
         if selected_indices:
             self.selected_target = self.listbox.get(selected_indices[0])
@@ -95,6 +94,5 @@ class SelectTargetDialog(tk.Toplevel):
 
 
     def _on_cancel(self):
-        """Xử lý khi nhấn Cancel hoặc đóng cửa sổ."""
         self.selected_target = None 
         self.destroy()
