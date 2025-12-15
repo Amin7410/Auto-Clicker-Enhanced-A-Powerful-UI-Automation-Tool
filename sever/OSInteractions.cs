@@ -1,4 +1,7 @@
-﻿// OSInteractions.cs
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2025 Đinh Khởi Minh
+
+// OSInteractions.cs
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,11 +12,10 @@ using InputSimulatorStandard;
 using InputSimulatorStandard.Native;
 using System.Collections.Generic;
 using System.Linq;
-// using System.Security.Permissions; // Không cần thiết cho các hàm hiện tại
+// using System.Security.Permissions; 
 using System.Diagnostics;
-using System.Windows.Forms; // Cần cho Keys enum
-using System.Threading.Tasks; // Cho Task (interactive capture)
-// using System.Text.Json; // Không cần trực tiếp ở đây, InteractiveCaptureService dùng
+using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace sever
 {
@@ -34,25 +36,16 @@ namespace sever
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetCursorPos(out POINT lpPoint);
 
-        // Không dùng GetDeviceCaps, GetDC, ReleaseDC trong code hiện tại, có thể bỏ
-        // [DllImport("gdi32.dll")]
-        // static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-        // [DllImport("user32.dll")]
-        // static extern IntPtr GetDC(IntPtr hWnd);
-        // [DllImport("user32.dll")]
-        // static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT { public int X; public int Y; }
 
-        // DTO for JSON serialization (used by InteractiveCaptureService, OSInteractions không dùng trực tiếp để serialize)
         public class PointDto { public int x { get; set; } public int y { get; set; } }
 
         private static readonly InputSimulator I = new InputSimulator();
-        private static readonly string _logPrefix = "OSInteractions."; // Thêm prefix cho log
+        private static readonly string _logPrefix = "OSInteractions."; 
 
         public static Size GetScreenSize()
         {
@@ -78,7 +71,7 @@ namespace sever
         public static byte[]? CaptureRegionGDI(int x1, int y1, int x2, int y2)
         {
             Console.WriteLine($"{_logPrefix}CaptureRegionGDI: Called with region ({x1},{y1})-({x2},{y2}).");
-            Rectangle virtualScreenBounds = GetVirtualScreenBounds(); // Gọi hàm đã có log
+            Rectangle virtualScreenBounds = GetVirtualScreenBounds(); 
             if (virtualScreenBounds.Width <= 0 || virtualScreenBounds.Height <= 0)
             {
                 Console.WriteLine($"{_logPrefix}CaptureRegionGDI: Error - Invalid virtual screen bounds.");
@@ -99,7 +92,7 @@ namespace sever
             if (width <= 0 || height <= 0)
             {
                 Console.WriteLine($"{_logPrefix}CaptureRegionGDI: Error - Invalid capture dimensions after clamping. WxH: {width}x{height}. Returning empty byte array.");
-                return Array.Empty<byte>(); // Hoặc null tùy theo cách Python xử lý
+                return Array.Empty<byte>(); 
             }
             try
             {
@@ -125,7 +118,7 @@ namespace sever
         public static byte[]? CaptureRegionAndPreprocess(int x1, int y1, int x2, int y2, bool useGrayscale, bool useBinarization)
         {
             Console.WriteLine($"{_logPrefix}CaptureRegionAndPreprocess: Called for region ({x1},{y1})-({x2},{y2}), Grayscale={useGrayscale}, Binarization={useBinarization}.");
-            byte[]? originalPngBytes = CaptureRegionGDI(x1, y1, x2, y2); // Gọi hàm đã có log
+            byte[]? originalPngBytes = CaptureRegionGDI(x1, y1, x2, y2); 
             if (originalPngBytes == null || originalPngBytes.Length == 0)
             {
                 Console.WriteLine($"{_logPrefix}CaptureRegionAndPreprocess: CaptureRegionGDI returned null or empty. Cannot preprocess.");
@@ -135,7 +128,6 @@ namespace sever
             if (useGrayscale || useBinarization)
             {
                 Console.WriteLine($"{_logPrefix}CaptureRegionAndPreprocess: Note - C# preprocessing flags (grayscale, binarization) are noted, but advanced preprocessing is currently expected in Python.");
-                // Nếu bạn có logic preprocessing C# cơ bản, hãy thêm log vào đó.
                 // byte[]? processedBytes = PreprocessImageBasic(originalPngBytes, useGrayscale, useBinarization);
                 // return processedBytes ?? originalPngBytes;
             }
@@ -146,7 +138,7 @@ namespace sever
         public static string? GetPixelColor(int x, int y)
         {
             Console.WriteLine($"{_logPrefix}GetPixelColor: Called for ({x},{y}).");
-            Rectangle virtualScreenBounds = GetVirtualScreenBounds(); // Gọi hàm đã có log
+            Rectangle virtualScreenBounds = GetVirtualScreenBounds();
             if (virtualScreenBounds.Width <= 0 || virtualScreenBounds.Height <= 0)
             {
                 Console.WriteLine($"{_logPrefix}GetPixelColor: Error - Invalid virtual screen bounds.");
@@ -178,7 +170,7 @@ namespace sever
         private static void MoveMouseToNormalizedPosition(int absX, int absY)
         {
             Console.WriteLine($"{_logPrefix}MoveMouseToNormalizedPosition: Input absolute ({absX},{absY}).");
-            var vsb = GetVirtualScreenBounds(); // Gọi hàm đã có log
+            var vsb = GetVirtualScreenBounds();
             if (vsb.Width <= 0 || vsb.Height <= 0)
             {
                 Console.WriteLine($"{_logPrefix}MoveMouseToNormalizedPosition: Error - Invalid virtual screen bounds. Skipping move.");
@@ -209,7 +201,7 @@ namespace sever
             Console.WriteLine($"{_logPrefix}SimulateClick: Called for ({x},{y}), Button='{button}', Type='{clickType}', Hold={holdDurationSeconds}s.");
             try
             {
-                MoveMouseToNormalizedPosition(x, y); // Gọi hàm đã có log
+                MoveMouseToNormalizedPosition(x, y);
                 Console.WriteLine($"{_logPrefix}SimulateClick: Mouse moved to target. Sleeping 20ms before click action.");
                 Thread.Sleep(20);
 
@@ -638,7 +630,6 @@ namespace sever
         }
 
 
-        // --- Các hàm tương tác mới sẽ gọi InteractiveCaptureService ---
         public static Task<string?> StartInteractiveDrawingCapture()
         {
             Console.WriteLine($"{_logPrefix}StartInteractiveDrawingCapture: Delegating to InteractiveCaptureService.");
@@ -661,20 +652,3 @@ namespace sever
         }
     }
 }
-
-
-// Auto Clicker Enhanced
-// Copyright (C) <2025> <Dinh Khởi Minh>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
