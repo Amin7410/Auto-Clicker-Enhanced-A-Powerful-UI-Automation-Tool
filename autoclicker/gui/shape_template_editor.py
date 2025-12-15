@@ -157,7 +157,7 @@ class ShapeTemplateEditor(tk.Toplevel):
         strokes_y_scroll = ttk.Scrollbar(strokes_display_frame, orient="vertical", command=self.strokes_text_area.yview)
         self.strokes_text_area.config(xscrollcommand=strokes_x_scroll.set, yscrollcommand=strokes_y_scroll.set)
         self.strokes_text_area.grid(row=0, column=0, sticky="nsew")
-        strokes_y_scroll.grid(row=0, column=1, sticky="ns", pady=(0,2), padx=(0,2)) # Thêm padding cho scrollbar
+        strokes_y_scroll.grid(row=0, column=1, sticky="ns", pady=(0,2), padx=(0,2))
         strokes_x_scroll.grid(row=1, column=0, sticky="ew", padx=(0,2), pady=(0,2))
 
         ai_input_frame = ttk.LabelFrame(drawing_main_frame, text="AI / Manual Data Input (JSON Strokes List)", padding=5)
@@ -383,7 +383,7 @@ class ShapeTemplateEditor(tk.Toplevel):
             else: 
                 self.job_manager.add_shape_template(template_name, self.current_template_data)
 
-            messagebox.showinfo("Save Successful", f"Shape Template '{display_name}' saved successfully.", parent=self.master) # Thông báo trên master của Toplevel
+            messagebox.showinfo("Save Successful", f"Shape Template '{display_name}' saved successfully.", parent=self.master) 
             self._close_editor()
         except ValueError as ve:
             messagebox.showerror("Save Error", str(ve), parent=self)
